@@ -2,6 +2,9 @@ package ru.veryevilzed.tools.tests;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -37,6 +42,18 @@ public class TestAll {
 
     @Value("${file.path}")
     String path;
+
+
+    @Before
+    @After
+    public void deleteOldStuff()  {
+        try {
+            FileUtils.forceDelete(Paths.get(path, "122@999.yml").toFile());
+        }catch (IOException ignored) {
+
+        }
+
+    }
 
 
     @Test
@@ -94,6 +111,8 @@ public class TestAll {
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals)
         );
 
+        if (devices.size() > 0)
+            log.info("Device:{}", devices.iterator().next().getPath());
         assertEquals(devices.size(), 0);
 
         devices = testFileService.get(
@@ -177,6 +196,57 @@ public class TestAll {
         );
         assertEquals(devices.size(), 1);
         assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+    }
+
+
+    @Test
+    public void testFileText() throws IOException {
+
+
+
+        Set<TextFileEntity> devices = testFileService.get(
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+        );
+        assertEquals(devices.size(), 1);
+        log.info("Path:{}", devices.iterator().next().getPath());
+        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+
+        TextFileEntity fi = devices.iterator().next();
+
+        assertEquals(fi.getText(), "hello: world");
+
+
+
+        FileUtils.writeStringToFile(Paths.get(path, "122@999.yml").toFile(), "world: down", "UTF-8");
+        log.info("---- FirstUpdate ------");
+        testFileService.update();
+
+        devices = testFileService.get(
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+        );
+        assertEquals(devices.size(), 1);
+        assertTrue(devices.iterator().next().getPath().endsWith("122@999.yml"));
+        fi = devices.iterator().next();
+        assertEquals(fi.getText(), "world: down");
+
+        FileUtils.forceDelete(Paths.get(path, "122@999.yml").toFile());
+        assertFalse(Paths.get(path, "122@999.yml").toFile().exists());
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        }catch (InterruptedException ignore) {
+
+        }
+        FileUtils.writeStringToFile(Paths.get(path, "122@999.yml").toFile(), "world: up", "UTF-8", false);
+
+        log.info("SecondUpdate");
+        testFileService.update();
+
+        assertEquals(fi.getText(), "world: up");
+
+        FileUtils.forceDelete(Paths.get(path, "122@999.yml").toFile());
+        testFileService.update();
     }
 
 }

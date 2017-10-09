@@ -1,6 +1,7 @@
 package ru.veryevilzed.tools.dto;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -9,17 +10,25 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
+
 @Slf4j
 public abstract class FileEntity {
 
+    @Getter
     final String path;
+
+    @Getter
     final File file;
+
+    @Getter
     long lastModified;
 
+    @Getter
     final Map<KeyCollection, Object> keys;
 
-    public boolean isModified() { return file.lastModified() != lastModified; }
+    public boolean isModified() {
+        return file.lastModified() != lastModified;
+    }
 
     public boolean exists() { return file.exists(); }
 
@@ -28,19 +37,22 @@ public abstract class FileEntity {
     }
 
     public void checkForUpdate() {
+
         if (exists() && isModified()) {
             try{
+                log.debug("Update file:{}", this.path);
                 update();
             }catch (Exception e){
                 log.error("Error update file {}:{}", path, e.getMessage());
             }finally {
                 lastModified = file.lastModified();
+
             }
 
         }
     }
 
-    public abstract void update();
+    protected abstract void update();
 
     @Override
     public int hashCode() {
