@@ -11,7 +11,11 @@ public interface KeyCollection {
 
     boolean isNullable();
 
-    void parseKey(String key, FileEntity file);
+    void remove(Object key, FileEntity entry);
+
+    Set<FileEntity> remove(Object key);
+
+    Object parseKey(String key, FileEntity file);
     Set<FileEntity> get(Object key, SortedComparableTypes type);
 
 }

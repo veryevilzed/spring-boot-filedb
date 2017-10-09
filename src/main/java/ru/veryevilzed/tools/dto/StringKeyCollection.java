@@ -7,10 +7,10 @@ public class StringKeyCollection extends SortedComparableKeyCollection<String>  
 
 
     @Override
-    public void parseKey(String key, FileEntity file) {
+    public Object parseKey(String key, FileEntity file) {
         if (key == null)
-            this.put(null, file);
+            return this.put(null, file);
         else
-            this.put(key, file);
+            return this.put(key, file);
     }
 }

@@ -29,7 +29,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>> imp
 
     public Object getDefaultKey() { return defaultKey; }
 
-    public FileEntity put(T key, FileEntity value) {
+    public T put(T key, FileEntity value) {
         if (key == null)
             key = defaultKey;
 
@@ -40,7 +40,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>> imp
         if (!map.containsKey(key))
             map.put(key, new HashSet<>());
         map.get(key).add(value);
-        return value;
+        return key;
     }
 
 
@@ -66,6 +66,17 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>> imp
             return new HashSet<>();
         return res;
     }
+
+
+    public void remove(Object key, FileEntity entry) {
+        this.map.get(key).remove(entry);
+        if (map.get(key).size() == 0) {
+            map.remove(key);
+            if (keys.contains(key))
+                keys.remove(key);
+        }
+    }
+
 
     public Set<FileEntity> remove(Object key) {
         if (keys.contains(key))

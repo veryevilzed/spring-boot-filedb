@@ -6,7 +6,6 @@ import ru.veryevilzed.tools.dto.FileEntity;
 import ru.veryevilzed.tools.dto.KeyCollection;
 import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.exceptions.DirectoryNotExists;
-import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
 import java.io.File;
 import java.util.*;
@@ -22,6 +21,7 @@ public abstract class FileRepository {
     private final File rootDirectory;
     private final Pattern pattern;
     private final Map<String, KeyCollection> keys;
+    private final Set<FileEntity> files;
 
     private void update(File dir) {
         for (File file : dir.listFiles()){
@@ -30,15 +30,27 @@ public abstract class FileRepository {
             String name = file.getAbsolutePath().replace(rootDirectory.getAbsolutePath()+"/", "");
             FileEntity entry = new FileEntity(file);
 
+            if (files.contains(entry))
+                continue;
+
             Matcher matcher = pattern.matcher(name);
             if (matcher.matches()) {
                 for (KeyCollection key : keys.values()) {
                     String keyTextValue = matcher.group(key.getName());
                     if (keyTextValue != null || key.getDefaultKey() != null || key.isNullable())
-                        key.parseKey(keyTextValue, entry);
+                        entry.addKey(key, key.parseKey(keyTextValue, entry));
+
                 }
             }
+            files.add(entry);
+        }
 
+        for(FileEntity file : new ArrayList<>(files)){
+            if (!file.exists()){
+                files.remove(file);
+                for(KeyCollection key : file.getKeys().keySet())
+                    key.remove(file.getKeys().get(key));
+            }
         }
     }
 
@@ -84,6 +96,8 @@ public abstract class FileRepository {
 
     public FileRepository(String path, String pattern, KeyCollection[] keys) {
         this.rootDirectory = new File(path);
+
+        files = new HashSet<>();
         if (!rootDirectory.exists())
             throw new DirectoryNotExists(path);
         this.pattern = Pattern.compile(pattern);

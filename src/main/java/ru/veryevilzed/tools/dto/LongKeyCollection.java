@@ -10,10 +10,10 @@ public class LongKeyCollection extends SortedComparableKeyCollection<Long>  {
     }
 
     @Override
-    public void parseKey(String key, FileEntity file) {
+    public Object parseKey(String key, FileEntity file) {
         if (key == null)
-            this.put(null, file);
+            return this.put(null, file);
         else
-            this.put(Long.parseLong(key), file);
+            return this.put(Long.parseLong(key), file);
     }
 }

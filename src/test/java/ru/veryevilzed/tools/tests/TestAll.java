@@ -119,4 +119,28 @@ public class TestAll {
     }
 
 
+    @Test
+    public void testUpdateDevice() {
+
+        testFileService.update();
+
+        Set<FileEntity> devices = testFileService.get(
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+        );
+
+        assertEquals(devices.size(), 1);
+        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+
+
+        devices = testFileService.get(
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 125, SortedComparableTypes.LessThanEqual)
+        );
+
+        assertEquals(devices.size(), 1);
+        assertTrue(devices.iterator().next().getPath().endsWith("123@.yml"));
+
+    }
+
 }
