@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,6 +15,9 @@ import ru.veryevilzed.tools.dto.FileEntity;
 import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -30,6 +34,9 @@ public class TestAll {
 
     @Autowired
     TestFileService testFileService;
+
+    @Value("${file.path}")
+    String path;
 
 
     @Test
@@ -121,9 +128,7 @@ public class TestAll {
 
     @Test
     public void testUpdateDevice() {
-
         testFileService.update();
-
         Set<FileEntity> devices = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
@@ -141,6 +146,38 @@ public class TestAll {
         assertEquals(devices.size(), 1);
         assertTrue(devices.iterator().next().getPath().endsWith("123@.yml"));
 
+    }
+
+    @Test
+    public void testFileCreationRemoving() throws IOException {
+        Set<FileEntity> devices = testFileService.get(
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+        );
+        assertEquals(devices.size(), 1);
+        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+
+        File f = Paths.get(path, "122@999.yml").toFile();
+        f.createNewFile();
+
+        testFileService.update();
+
+        devices = testFileService.get(
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+        );
+        assertEquals(devices.size(), 1);
+        assertTrue(devices.iterator().next().getPath().endsWith("122@999.yml"));
+
+        f.delete();
+        testFileService.update();
+
+        devices = testFileService.get(
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+        );
+        assertEquals(devices.size(), 1);
+        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
     }
 
 }

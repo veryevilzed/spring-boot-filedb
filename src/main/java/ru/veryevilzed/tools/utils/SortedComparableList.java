@@ -19,7 +19,8 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
         }catch (ClassCastException ignored){
             return false;
         }
-        return this.stream().filter(i -> i.compareTo(obj) == 0).findFirst().orElseGet(null) != null;
+
+        return this.stream().filter(i -> i == null ? i == obj : i.compareTo(obj) == 0).findFirst().orElseGet(null) != null;
     }
 
     public V get(V key, SortedComparableTypes type, V def) {
