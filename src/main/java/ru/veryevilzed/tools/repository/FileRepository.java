@@ -8,6 +8,7 @@ import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.exceptions.DirectoryNotExists;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,20 +17,23 @@ import java.util.regex.Pattern;
  * Абстрактный репозиторий файлов
  */
 @Slf4j
-public abstract class FileRepository {
+public abstract class FileRepository<T extends FileEntity> {
 
     private final File rootDirectory;
     private final Pattern pattern;
     private final Map<String, KeyCollection> keys;
-    private final Set<FileEntity> files;
+    private final Set<T> files;
 
-    private void update(File dir) {
+    private Class<T> clazz;
+
+    protected abstract T createFileEntity(File file);
+
+    private void update(File dir) throws NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalAccessException {
         for (File file : dir.listFiles()){
             if (file.isDirectory())
                 update(file);
             String name = file.getAbsolutePath().replace(rootDirectory.getAbsolutePath()+"/", "");
-            FileEntity entry = new FileEntity(file);
-
+            T entry = createFileEntity(file); //  T(file);
             if (files.contains(entry))
                 continue;
 
@@ -39,7 +43,6 @@ public abstract class FileRepository {
                     String keyTextValue = matcher.group(key.getName());
                     if (keyTextValue != null || key.getDefaultKey() != null || key.isNullable())
                         entry.addKey(key, key.parseKey(keyTextValue, entry));
-
                 }
             }
             files.add(entry);
@@ -50,24 +53,29 @@ public abstract class FileRepository {
                 files.remove(file);
                 for(KeyCollection key : file.getKeys().keySet())
                     key.remove(file.getKeys().get(key));
-            }
+            }else
+                file.checkForUpdate();
         }
     }
 
     public void update() {
-        update(this.rootDirectory);
+        try {
+            update(this.rootDirectory);
+        }catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e){
+            log.error("Update error: {}", e.getMessage());
+        }
     }
 
     public KeyCollection get(String key) {
         return keys.get(key);
     }
 
-    public Set<FileEntity> get(KeyRequest... requests) {
-        Set<FileEntity> res = null;
-        List<Set<FileEntity>> results = new ArrayList<>();
+    public Set<T> get(KeyRequest... requests) {
+        Set<T> res = null;
+        List<Set<T>> results = new ArrayList<>();
 
         for(KeyRequest request : requests) {
-            Set<FileEntity> resultSet = get(request.getName()).get(request.getKey(), request.getType());
+            Set<T> resultSet = get(request.getName()).get(request.getKey(), request.getType());
             if (resultSet == null && request.isUseDefault()){
                 request = request.getDefaultRequest();
                 resultSet = get(request.getName()).get(request.getKey(), request.getType());
@@ -83,7 +91,7 @@ public abstract class FileRepository {
         if (results.size() == 0)
             return new HashSet<>();
 
-        for(Set<FileEntity> result : results){
+        for(Set<T> result : results){
             if (res == null)
                 res = new HashSet<>(result);
             else

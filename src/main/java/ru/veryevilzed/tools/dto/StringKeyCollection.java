@@ -1,13 +1,13 @@
 package ru.veryevilzed.tools.dto;
 
-public class StringKeyCollection extends SortedComparableKeyCollection<String>  {
+public class StringKeyCollection<V extends FileEntity> extends SortedComparableKeyCollection<String, V>  {
     public StringKeyCollection(String name) {
         super(name);
     }
 
 
     @Override
-    public Object parseKey(String key, FileEntity file) {
+    public Object parseKey(String key, V file) {
         if (key == null)
             return this.put(null, file);
         else

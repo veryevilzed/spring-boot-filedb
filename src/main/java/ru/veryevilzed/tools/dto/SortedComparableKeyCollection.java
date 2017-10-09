@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public abstract class SortedComparableKeyCollection<T extends Comparable<T>> implements KeyCollection {
+public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> implements KeyCollection<V> {
 
 
-    private Map<T, Set<FileEntity>> map;
+    private Map<T, Set<V>> map;
 
     @Getter
     final String name;
@@ -29,7 +29,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>> imp
 
     public Object getDefaultKey() { return defaultKey; }
 
-    public T put(T key, FileEntity value) {
+    public T put(T key, V value) {
         if (key == null)
             key = defaultKey;
 
@@ -45,12 +45,12 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>> imp
 
 
 
-    public Set<FileEntity> get(Object key, SortedComparableTypes type) {
+    public Set<V> get(Object key, SortedComparableTypes type) {
         T obj = (T)key;
         return this.get(obj, type);
     }
 
-    private Set<FileEntity> get(T key, SortedComparableTypes type) {
+    private Set<V> get(T key, SortedComparableTypes type) {
         if ((type == SortedComparableTypes.Equals || type == SortedComparableTypes.GreaterThanEqual || type == SortedComparableTypes.LessThanEqual) && this.map.containsKey(key))
             return this.map.get(key);
 
@@ -61,7 +61,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>> imp
             return null;
         }
 
-        Set<FileEntity> res = this.map.get(_key);
+        Set<V> res = this.map.get(_key);
         if (res == null)
             return new HashSet<>();
         return res;
@@ -78,7 +78,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>> imp
     }
 
 
-    public Set<FileEntity> remove(Object key) {
+    public Set<V> remove(Object key) {
         if (keys.contains(key))
             keys.remove(key);
         return this.map.remove(key);

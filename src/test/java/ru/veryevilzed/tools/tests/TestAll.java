@@ -41,15 +41,14 @@ public class TestAll {
 
     @Test
     public void testDeviceNull() {
-
-        Set<FileEntity> devices = testFileService.get("device").get(null, SortedComparableTypes.Equals);
+        Set<TextFileEntity> devices = testFileService.get("device").get(null, SortedComparableTypes.Equals);
         assertEquals(devices.size(), 2);
     }
 
     @Test
     public void testGetDevice() {
 
-        Set<FileEntity> devices = testFileService.get("device").get(456L, SortedComparableTypes.Equals);
+        Set<TextFileEntity> devices = testFileService.get("device").get(456L, SortedComparableTypes.Equals);
         assertEquals(devices.size(), 2);
 
         devices = testFileService.get("version").get(0, SortedComparableTypes.Equals);
@@ -91,7 +90,7 @@ public class TestAll {
 
     @Test
     public void testDefaultNullResponse() {
-        Set<FileEntity> devices = testFileService.get(
+        Set<TextFileEntity> devices = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals)
         );
 
@@ -106,7 +105,7 @@ public class TestAll {
 
     @Test
     public void testUndefinedDevice() {
-        Set<FileEntity> devices = testFileService.get(
+        Set<TextFileEntity> devices = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
@@ -129,7 +128,7 @@ public class TestAll {
     @Test
     public void testUpdateDevice() {
         testFileService.update();
-        Set<FileEntity> devices = testFileService.get(
+        Set<TextFileEntity> devices = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
@@ -150,7 +149,7 @@ public class TestAll {
 
     @Test
     public void testFileCreationRemoving() throws IOException {
-        Set<FileEntity> devices = testFileService.get(
+        Set<TextFileEntity> devices = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );

@@ -1,6 +1,7 @@
 package ru.veryevilzed.tools.dto;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -9,7 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class FileEntity {
+@Slf4j
+public abstract class FileEntity {
 
     final String path;
     final File file;
@@ -25,10 +27,20 @@ public class FileEntity {
         this.keys.put(keyName, keyValue);
     }
 
-    public void update() {
-        if (exists())
-            lastModified = file.lastModified();
+    public void checkForUpdate() {
+        if (exists() && isModified()) {
+            try{
+                update();
+            }catch (Exception e){
+                log.error("Error update file {}:{}", path, e.getMessage());
+            }finally {
+                lastModified = file.lastModified();
+            }
+
+        }
     }
+
+    public abstract void update();
 
     @Override
     public int hashCode() {
@@ -49,7 +61,7 @@ public class FileEntity {
     public FileEntity(File file) {
         this.file = file;
         path = file.getAbsolutePath();
-        lastModified = file.lastModified();
+        lastModified = -1; //file.lastModified();
         keys = new HashMap<>();
     }
 

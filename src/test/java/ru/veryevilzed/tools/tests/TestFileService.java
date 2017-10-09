@@ -9,9 +9,15 @@ import ru.veryevilzed.tools.dto.LongKeyCollection;
 import ru.veryevilzed.tools.repository.FileRepository;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 
 @Service
-public class TestFileService extends FileRepository {
+public class TestFileService extends FileRepository<TextFileEntity> {
+
+    @Override
+    protected TextFileEntity createFileEntity(File file) {
+        return new TextFileEntity(file);
+    }
 
     @PostConstruct
     @Scheduled(fixedDelay = 60000L)

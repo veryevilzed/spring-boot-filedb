@@ -1,6 +1,6 @@
 package ru.veryevilzed.tools.dto;
 
-public class IntegerKeyCollection extends SortedComparableKeyCollection<Integer> {
+public class IntegerKeyCollection<V extends FileEntity> extends SortedComparableKeyCollection<Integer, V> {
 
     public IntegerKeyCollection(String name) {
         super(name);
@@ -11,7 +11,7 @@ public class IntegerKeyCollection extends SortedComparableKeyCollection<Integer>
     }
 
     @Override
-    public Object parseKey(String key, FileEntity file) {
+    public Object parseKey(String key, V file) {
         if (key == null)
             return this.put(null, file);
         else
