@@ -15,7 +15,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
-public class TestSortedComparableList {
+public class SortedComparableListTest {
 
     SortedComparableList<Integer> list;
 

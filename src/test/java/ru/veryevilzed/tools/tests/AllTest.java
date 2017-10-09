@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.veryevilzed.tools.dto.FileEntity;
 import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
@@ -34,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("test")
 @TestPropertySource(properties = "debug=true")
 @Slf4j
-public class TestAll {
+public class AllTest {
 
 
     @Autowired
@@ -58,7 +57,7 @@ public class TestAll {
 
     @Test
     public void testDeviceNull() {
-        Set<TextFileEntity> devices = testFileService.get("device").get(null, SortedComparableTypes.Equals);
+        Set devices = testFileService.get("device").get(null, SortedComparableTypes.Equals);
         assertEquals(devices.size(), 2);
     }
 
