@@ -80,6 +80,24 @@ public class SortedComparableListTest {
     }
 
     @Test
+    public void testDelete() {
+        list.add(33);
+        assertEquals((int)list.get(33, SortedComparableTypes.Equals, null), 33);
+        list.remove((Object)33);
+        assertEquals((int)list.get(33, SortedComparableTypes.Equals, 0), 0);
+    }
+
+
+    @Test
+    public void testMany() {
+
+        assertEquals(list.getAll(50, SortedComparableTypes.GreaterThan, null).size(), 2);
+        assertEquals(list.getAll(100, SortedComparableTypes.GreaterThan, null).size(), 1);
+        assertNull(list.getAll(100, SortedComparableTypes.GreaterThan, null).iterator().next());
+    }
+
+
+    @Test
     public void testMaps() {
         Map<Integer, String> map = new HashMap<Integer, String>() {
             @Override

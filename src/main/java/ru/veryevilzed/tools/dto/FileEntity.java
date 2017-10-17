@@ -1,7 +1,7 @@
 package ru.veryevilzed.tools.dto;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -12,6 +12,7 @@ import java.util.Map;
 
 
 @Slf4j
+@ToString(exclude = {"keys","file"})
 public abstract class FileEntity {
 
     @Getter
@@ -26,21 +27,42 @@ public abstract class FileEntity {
     @Getter
     final Map<KeyCollection, Object> keys;
 
+    /**
+     * Фаил изменился
+     * @return
+     */
     public boolean isModified() {
         return file.lastModified() != lastModified;
     }
 
+
+    /**
+     * Фаил существует
+     * @return
+     */
     public boolean exists() { return file.exists(); }
 
+    /**
+     * Метод для перекрытия и аказания что есть DATA в контейнере
+     */
+    public boolean hasData() { return false; }
+
+    /**
+     * Добавить ключ к даному инстансу
+     * @param keyName ключ
+     * @param keyValue значение
+     */
     public void addKey(KeyCollection keyName, Object keyValue) {
         this.keys.put(keyName, keyValue);
     }
 
+    /**
+     * Проверить на обновление
+     */
     public void checkForUpdate() {
 
         if (exists() && isModified()) {
             try{
-                log.debug("Update file:{}", this.path);
                 update();
             }catch (Exception e){
                 log.error("Error update file {}:{}", path, e.getMessage());
@@ -52,6 +74,9 @@ public abstract class FileEntity {
         }
     }
 
+    /**
+     * абстрактный метод обновления данных
+     */
     protected abstract void update();
 
     @Override
@@ -73,7 +98,7 @@ public abstract class FileEntity {
     public FileEntity(File file) {
         this.file = file;
         path = file.getAbsolutePath();
-        lastModified = -1; //file.lastModified();
+        lastModified = -1;
         keys = new HashMap<>();
     }
 

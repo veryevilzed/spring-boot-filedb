@@ -2,10 +2,13 @@ package ru.veryevilzed.tools.repository;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import ru.veryevilzed.tools.dto.FileEntity;
 import ru.veryevilzed.tools.dto.KeyCollection;
 import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.exceptions.DirectoryNotExists;
+import ru.veryevilzed.tools.utils.OrderedSet;
+import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -28,12 +31,30 @@ public abstract class FileRepository<T extends FileEntity> {
 
     protected abstract T createFileEntity(File file);
 
-    private void update(File dir) throws NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalAccessException {
+    private int updateLaunchCounter = 0;
+
+    @SuppressWarnings({"ConstantConditions", "unchecked", "SuspiciousMethodCalls"})
+    private synchronized void update(File dir)
+            throws NoSuchMethodException,
+            InstantiationException,
+            InvocationTargetException,
+            IllegalAccessException,
+            InterruptedException {
+
+        if (updateLaunchCounter > 0){
+            updateLaunchCounter++;
+            this.wait();
+            updateLaunchCounter--;
+            return;
+        }
+
+        updateLaunchCounter++;
+
         for (File file : dir.listFiles()){
             if (file.isDirectory())
                 update(file);
             String name = file.getAbsolutePath().replace(rootDirectory.getAbsolutePath()+"/", "");
-            T entry = createFileEntity(file); //  T(file);
+            T entry = createFileEntity(file);
             if (files.contains(entry))
                 continue;
 
@@ -52,16 +73,18 @@ public abstract class FileRepository<T extends FileEntity> {
             if (!file.exists()){
                 files.remove(file);
                 for(KeyCollection key : file.getKeys().keySet())
-                    key.remove(file.getKeys().get(key));
+                    key.remove(file.getKeys().get(key), file);
             }else
                 file.checkForUpdate();
         }
+        this.notifyAll();
+        updateLaunchCounter--;
     }
 
     public void update() {
         try {
             update(this.rootDirectory);
-        }catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e){
+        }catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException | InterruptedException e){
             log.error("Update error: {}", e.getMessage());
         }
     }
@@ -70,33 +93,38 @@ public abstract class FileRepository<T extends FileEntity> {
         return keys.get(key);
     }
 
-    public Set<T> get(KeyRequest... requests) {
-        Set<T> res = null;
+    @SuppressWarnings("unchecked")
+    public OrderedSet<T> get(KeyRequest... requests) {
+        OrderedSet<T> res = null;
         List<Set<T>> results = new ArrayList<>();
 
         for(KeyRequest request : requests) {
-            Set<T> resultSet = get(request.getName()).get(request.getKey(), request.getType());
-            if (resultSet == null && request.isUseDefault()){
+            OrderedSet<T> resultSet = get(request.getName()).get(request.getKey(), request.getType());
+            if ((resultSet == null || resultSet.isEmpty())  && request.isUseDefault()){
                 request = request.getDefaultRequest();
-                resultSet = get(request.getName()).get(request.getKey(), request.getType());
+                resultSet = get(request.getName()).get(request.getKey(), SortedComparableTypes.Equals);
             }
-
-            if (resultSet == null)
-                resultSet = new HashSet<>();
-
+            if (resultSet == null) {
+                resultSet = new OrderedSet<>();
+            }
             results.add(resultSet);
 
         }
-
         if (results.size() == 0)
-            return new HashSet<>();
+            return new OrderedSet<>();
 
         for(Set<T> result : results){
-            if (res == null)
-                res = new HashSet<>(result);
-            else
+            if (res == null) {
+                res = new OrderedSet<>(result);
+            }else
                 res.retainAll(result);
         }
+
+        for(T result : res)
+            if (!result.exists() && !result.hasData()){
+                this.update();
+                return get(requests);
+            }
 
         return res;
     }

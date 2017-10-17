@@ -2,20 +2,17 @@ package ru.veryevilzed.tools.dto;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import ru.veryevilzed.tools.exceptions.KeyNotFoundException;
+import ru.veryevilzed.tools.utils.OrderedSet;
 import ru.veryevilzed.tools.utils.SortedComparableList;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> implements KeyCollection<V> {
 
 
-    private Map<T, Set<V>> map;
+    private Map<T, OrderedSet<V>> map;
 
     @Getter
     final String name;
@@ -38,50 +35,45 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> 
 
         keys.add(key);
         if (!map.containsKey(key))
-            map.put(key, new HashSet<>());
+            map.put(key, new OrderedSet<>());
         map.get(key).add(value);
         return key;
     }
 
-
-
-    public Set<V> get(Object key, SortedComparableTypes type) {
-        T obj = (T)key;
-        return this.get(obj, type);
+    @Override
+    public String toString() {
+        return String.format("[%s %s]", name, map);
     }
 
-    private Set<V> get(T key, SortedComparableTypes type) {
-        if ((type == SortedComparableTypes.Equals || type == SortedComparableTypes.GreaterThanEqual || type == SortedComparableTypes.LessThanEqual) && this.map.containsKey(key))
-            return this.map.get(key);
+    @SuppressWarnings("unchecked")
+    public OrderedSet<V> get(Object key, SortedComparableTypes type) {
+        if (type == SortedComparableTypes.Equals)
+            if (this.map.containsKey(key))
+                return this.map.get(key);
+            else
+                return new OrderedSet<>();
 
-        T _key;
-        try {
-            _key = keys.get(key, type);
-        }catch (KeyNotFoundException e){
-            return null;
-        }
-
-        Set<V> res = this.map.get(_key);
-        if (res == null)
-            return new HashSet<>();
+        OrderedSet<V> res = new OrderedSet<>();
+        for(T _key : keys.getAll((T)key, type))
+            res.addAll(this.map.get(_key));
         return res;
     }
 
 
+
+    @SuppressWarnings("SuspiciousMethodCalls")
     public void remove(Object key, FileEntity entry) {
         this.map.get(key).remove(entry);
-        if (map.get(key).size() == 0) {
-            map.remove(key);
-            if (keys.contains(key))
-                keys.remove(key);
-        }
+        if (map.get(key).size() == 0)
+            this.remove(key);
     }
 
 
-    public Set<V> remove(Object key) {
-        if (keys.contains(key))
-            keys.remove(key);
-        return this.map.remove(key);
+    public void remove(Object key) {
+        if (keys.contains(key)) {
+            keys.remove((Object)key);
+        }
+        this.map.remove(key);
     }
 
 

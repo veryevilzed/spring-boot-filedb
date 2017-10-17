@@ -23,6 +23,11 @@ public class TextFileEntity extends FileEntity {
         text = null;
     }
 
+    @Override
+    public boolean hasData() {
+        return this.text != null;
+    }
+
     public String getText() {
         if (text == null) {
             try {
