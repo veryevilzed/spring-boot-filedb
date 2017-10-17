@@ -3,9 +3,6 @@ package ru.veryevilzed.tools.dto;
 import ru.veryevilzed.tools.utils.OrderedSet;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
-import java.util.List;
-import java.util.Set;
-
 public interface KeyCollection<V> {
     String getName();
 

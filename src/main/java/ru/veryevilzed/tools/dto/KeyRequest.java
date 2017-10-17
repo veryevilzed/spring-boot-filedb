@@ -1,6 +1,5 @@
 package ru.veryevilzed.tools.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 

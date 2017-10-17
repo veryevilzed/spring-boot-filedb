@@ -1,7 +1,5 @@
 package ru.veryevilzed.tools.dto;
 
-import java.util.Arrays;
-
 public class LongKeyCollection<V extends FileEntity> extends SortedComparableKeyCollection<Long, V>  {
     public LongKeyCollection(String name) {
         super(name);
