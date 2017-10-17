@@ -1,11 +1,9 @@
 package ru.veryevilzed.tools.tests;
 
-import lombok.Data;
-import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import ru.veryevilzed.tools.dto.FileEntity;
-
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 
 public class TextFileEntity extends FileEntity {

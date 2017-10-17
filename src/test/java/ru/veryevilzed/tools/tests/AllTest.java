@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.veryevilzed.tools.dto.FileEntity;
 import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
@@ -24,9 +23,7 @@ import java.nio.file.Paths;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -68,91 +65,87 @@ public class AllTest {
         devices = testFileService.get("version").get(0, SortedComparableTypes.Equals);
         assertEquals(devices.size(), 2);
 
-        devices = testFileService.get(
+    }
+
+    @Test
+    public void testRequestDevice() {
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 456L, SortedComparableTypes.Equals),
                 new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual)
         );
 
-        //assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("123@456.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("123@456.yml"));
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 456L, SortedComparableTypes.Equals),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@456.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@456.yml"));
 
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 0); // Должен быть 0 так как в запросе нет Default!
+        assertNull(device); // Должен быть null так как в запросе нет Default!
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 456L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 124, SortedComparableTypes.LessThanEqual)
         );
 
-        assertTrue(devices.iterator().next().getPath().endsWith("123@456.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("123@456.yml"));
 
     }
 
     @Test
     public void testDefaultNullResponse() {
-        Set<TextFileEntity> devices = testFileService.get(
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals)
         );
+        assertNull(device);
 
-        if (devices.size() > 0)
-            log.info("Device:{}", devices.iterator().next().getPath());
-        assertEquals(devices.size(), 0);
-
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null)
         );
-
-        assertEquals(devices.size(), 2);
+        assertNotNull(device);
     }
 
     @Test
     public void testAllFalseDevice() {
-        Set<TextFileEntity> devices = testFileService.get(
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 333L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 5, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@.yml"));
     }
 
 
     @Test
     public void testUndefinedDevice() {
-        Set<TextFileEntity> devices = testFileService.get(
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@.yml"));
 
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 125, SortedComparableTypes.LessThanEqual)
         );
 
-        for(TextFileEntity e : devices){
-            log.info("-->{}", e.getPath());
-        }
-
-        //assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("123@.yml"));
-
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("123@.yml"));
     }
 
 
@@ -161,169 +154,159 @@ public class AllTest {
     @Test
     public void testUpdateDevice() {
         testFileService.update();
-        Set<TextFileEntity> devices = testFileService.get(
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@.yml"));
 
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 125, SortedComparableTypes.LessThanEqual)
         );
 
-        //assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("123@.yml"));
-
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("123@.yml"));
     }
 
     @Test
     public void testDeleteFileAndSafeContent() throws IOException {
         FileUtils.writeStringToFile(Paths.get(path, "122@999.yml").toFile(), "world: down", "UTF-8");
-
         testFileService.update();
 
-
-
-        Set<TextFileEntity> devices = testFileService.get(
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("122@999.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("122@999.yml"));
 
-        TextFileEntity fi = devices.iterator().next();
-        assertEquals(fi.getText(), "world: down");
+
+        assertEquals(device.getText(), "world: down");
 
         FileUtils.forceDelete(Paths.get(path, "122@999.yml").toFile());
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("122@999.yml"));
-        fi = devices.iterator().next();
-        assertEquals(fi.getText(), "world: down");
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("122@999.yml"));
+
+        assertEquals(device.getText(), "world: down");
 
         FileUtils.writeStringToFile(Paths.get(path, "122@500.yml").toFile(), "world: down", "UTF-8");
         testFileService.update();
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 500L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("122@500.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("122@500.yml"));
 
     }
 
     @Test
     public void testDeleteFileWithoutSafeContent() throws IOException {
 
-        Set<TextFileEntity> devices;
+        TextFileEntity device;
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 333L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@.yml"));
 
 
         FileUtils.writeStringToFile(Paths.get(path, "122@500.yml").toFile(), "world: down", "UTF-8");
 
         testFileService.update();
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 500L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
-
-        assertEquals(devices.size(), 1);
-
-        TextFileEntity f = devices.iterator().next();
-
-        assertTrue(f.getPath().endsWith("122@500.yml"));
-
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("122@500.yml"));
         FileUtils.forceDelete(Paths.get(path, "122@500.yml").toFile());
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 500L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
 
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+        assertNotNull(device);;
+        assertTrue(device.getPath().endsWith("@.yml"));
      }
 
     @Test
     public void testFileCreationRemoving() throws IOException {
-        Set<TextFileEntity> devices = testFileService.get(
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@.yml"));
 
         File f = Paths.get(path, "122@999.yml").toFile();
         f.createNewFile();
 
         testFileService.update();
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("122@999.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("122@999.yml"));
 
         f.delete();
         testFileService.update();
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
-        assertEquals(devices.size(), 1);
-        String path = devices.iterator().next().getPath();
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@.yml"));
     }
 
 
     @Test
     public void testFileText() throws IOException {
 
-        Set<TextFileEntity> devices = testFileService.get(
+        TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("@.yml"));
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("@.yml"));
 
-        TextFileEntity fi = devices.iterator().next();
 
-        assertEquals(fi.getText(), "hello: world");
+        assertEquals(device.getText(), "hello: world");
 
 
 
         FileUtils.writeStringToFile(Paths.get(path, "122@999.yml").toFile(), "world: down", "UTF-8");
         testFileService.update();
 
-        devices = testFileService.get(
+        device = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
         );
-        assertEquals(devices.size(), 1);
-        assertTrue(devices.iterator().next().getPath().endsWith("122@999.yml"));
-        fi = devices.iterator().next();
-        assertEquals(fi.getText(), "world: down");
+        assertNotNull(device);
+        assertTrue(device.getPath().endsWith("122@999.yml"));
+
+        assertEquals(device.getText(), "world: down");
 
         FileUtils.forceDelete(Paths.get(path, "122@999.yml").toFile());
         assertFalse(Paths.get(path, "122@999.yml").toFile().exists());
@@ -336,7 +319,7 @@ public class AllTest {
 
         testFileService.update();
 
-        assertEquals(fi.getText(), "world: up");
+        assertEquals(device.getText(), "world: up");
 
         FileUtils.forceDelete(Paths.get(path, "122@999.yml").toFile());
         testFileService.update();

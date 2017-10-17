@@ -17,11 +17,44 @@
 
 ```
 
+Entity:
+
+```java
+
+public class TextFileEntity extends FileEntity {
+    String text = null;
+    public TextFileEntity(File file) {
+        super(file);
+    }
+
+    @Override
+    public void update() {
+        text = null;
+    }
+
+    @Override
+    public boolean hasData() {
+        return this.text != null;
+    }
+
+    public String getText() {
+        if (text == null) {
+            try {
+                text = FileUtils.readFileToString(this.getFile(), "UTF-8");
+            }catch (IOException ignored) {}
+        }
+        return text;
+    }
+}
+
+```
+
+Service:
 
 ```java
 
 @Service
-public class TestFileService extends FileRepository {
+public class TestFileService extends FileRepository<TextFileEntity> {
 
     @PostConstruct
     @Scheduled(fixedDelay = 60000L)
@@ -39,7 +72,6 @@ public class TestFileService extends FileRepository {
 
 
 ```
-
 
 Ключи:
 
@@ -67,25 +99,25 @@ new KeyCollection(String name, T defaultKey)
 
 ```java
 
-Set<FileEntity> devices = testFileService.get("device").get(456L, SortedComparableTypes.Equals);
+Set<TextFileEntity> devices = testFileService.get("device").get(456L, SortedComparableTypes.Equals);
 // 2-ва файла 123@456.yml и @456.yml
 
-Set<FileEntity> devices = testFileService.get("device").get(null, SortedComparableTypes.Equals);
+Set<TextFileEntity> devices = testFileService.get("device").get(null, SortedComparableTypes.Equals);
 // 2-ва файла 123@.yml и @.yml (так как указан фолбэк на Null)
 
-Set<FileEntity> devices = testFileService.get(
+TextFileEntity device = testFileService.get(
             new KeyRequest("device", 456L, SortedComparableTypes.Equals),
             new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual)
 ); // 123@456.yml
 
 
-Set<FileEntity> devices = testFileService.get(
+TextFileEntity device = testFileService.get(
                 new KeyRequest("device", 456L, SortedComparableTypes.Equals),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
 ); // @456.yml
 
 
-Set<FileEntity> devices = testFileService.get(
+TextFileEntity devices = testFileService.get(
                 new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
                 new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
 ); // @.yml

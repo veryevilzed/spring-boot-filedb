@@ -94,7 +94,7 @@ public abstract class FileRepository<T extends FileEntity> {
     }
 
     @SuppressWarnings("unchecked")
-    public OrderedSet<T> get(KeyRequest... requests) {
+    public T get(KeyRequest... requests) {
         OrderedSet<T> res = null;
         List<Set<T>> results = new ArrayList<>();
 
@@ -111,7 +111,7 @@ public abstract class FileRepository<T extends FileEntity> {
 
         }
         if (results.size() == 0)
-            return new OrderedSet<>();
+            return null;
 
         for(Set<T> result : results){
             if (res == null) {
@@ -126,7 +126,9 @@ public abstract class FileRepository<T extends FileEntity> {
                 return get(requests);
             }
 
-        return res;
+        if (res.size() == 0)
+            return null;
+        return res.iterator().next();
     }
 
 
