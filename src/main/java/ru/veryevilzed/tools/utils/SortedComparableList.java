@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> {
 
+    @SuppressWarnings("UnnecessaryParentheses")
     @Override
     public boolean contains(Object o) {
         V obj;
@@ -34,7 +35,7 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
             default:
             case Equals:
                 if (key == null)
-                    res.add(this.stream().filter(i -> i == key).findFirst().orElse(null));
+                    res.add(this.stream().filter(Objects::isNull).findFirst().orElse(null));
                 else
                     res.add(this.stream().filter(key::equals).findFirst().orElse(null));
                 break;
@@ -70,7 +71,7 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
             default:
             case Equals:
                 if (key == null)
-                    res = this.stream().filter(i -> i == key).findFirst().orElse(null);
+                    res = this.stream().filter(Objects::isNull).findFirst().orElse(null);
                 else
                     res = this.stream().filter(key::equals).findFirst().orElse(null);
                 break;
