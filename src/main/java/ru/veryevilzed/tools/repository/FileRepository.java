@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Абстрактный репозиторий файлов
@@ -39,51 +40,65 @@ public abstract class FileRepository<T extends FileEntity> {
             IllegalAccessException,
             InterruptedException {
 
-        if (updateLaunchCounter > 0){
-            updateLaunchCounter++;
-            this.wait();
-            updateLaunchCounter--;
-            return;
-        }
-
-        updateLaunchCounter++;
 
         for (File file : dir.listFiles()){
             if (file.isDirectory())
                 update(file);
             String name = file.getAbsolutePath().replace(rootDirectory.getAbsolutePath()+"/", "");
+            log.trace("Check file: {}", file);
+            Matcher matcher = pattern.matcher(name);
+            if (!matcher.matches())
+                continue;
+
             T entry = createFileEntity(file);
             if (files.contains(entry))
                 continue;
 
-            Matcher matcher = pattern.matcher(name);
-            if (matcher.matches()) {
-                for (KeyCollection key : keys.values()) {
-                    String keyTextValue = matcher.group(key.getName());
-                    if (keyTextValue != null || key.getDefaultKey() != null || key.isNullable())
-                        entry.addKey(key, key.parseKey(keyTextValue, entry));
-                }
+            for (KeyCollection key : keys.values()) {
+                String keyTextValue = matcher.group(key.getName());
+                if (keyTextValue != null || key.getDefaultKey() != null || key.isNullable())
+                    entry.addKey(key, key.parseKey(keyTextValue, entry));
             }
+
             files.add(entry);
         }
 
         for(FileEntity file : new ArrayList<>(files)){
             if (!file.exists()){
+                log.trace("Remove file: {}", file);
                 files.remove(file);
                 for(KeyCollection key : file.getKeys().keySet())
                     key.remove(file.getKeys().get(key), file);
-            }else
+            }else {
+                log.trace("Update file: {}", file);
                 file.checkForUpdate();
+            }
         }
-        this.notifyAll();
-        updateLaunchCounter--;
     }
 
-    public void update() {
+    public synchronized void update() {
+        log.debug("Updating file repository {}", this.getClass().getName());
+        if (updateLaunchCounter > 0){
+            updateLaunchCounter++;
+            log.debug("Wait");
+            try {
+                this.wait();
+            }catch (InterruptedException e){
+            }finally {
+                updateLaunchCounter--;
+            }
+            return;
+        }
+
+        updateLaunchCounter++;
+
         try {
             update(this.rootDirectory);
         }catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException | InterruptedException e){
             log.error("Update error: {}", e.getMessage());
+        }finally {
+            notifyAll();
+            updateLaunchCounter--;
         }
     }
 
@@ -94,22 +109,28 @@ public abstract class FileRepository<T extends FileEntity> {
     @SuppressWarnings("unchecked")
     public T get(KeyRequest... requests) {
         OrderedSet<T> res = null;
+
         List<Set<T>> results = new ArrayList<>();
 
         for(KeyRequest request : requests) {
             OrderedSet<T> resultSet = get(request.getName()).get(request.getKey(), request.getType());
-            if ((resultSet == null || resultSet.isEmpty())  && request.isUseDefault()){
-                request = request.getDefaultRequest();
-                resultSet = get(request.getName()).get(request.getKey(), SortedComparableTypes.Equals);
-            }
             if (resultSet == null) {
                 resultSet = new OrderedSet<>();
+            }
+
+            if (request.isUseDefault()){
+                request = request.getDefaultRequest();
+                resultSet.addAll(get(request.getName()).get(request.getKey(), SortedComparableTypes.Equals));
             }
             results.add(resultSet);
 
         }
         if (results.size() == 0)
             return null;
+
+        for(int i=0;i<results.size();i++) {
+            log.trace("Keys:{} {} = {}",  i, requests[i].getName(), results.get(i).stream().map(j -> j.getFile().getName()).collect(Collectors.toList()));
+        }
 
         for(Set<T> result : results){
             if (res == null) {
@@ -118,6 +139,9 @@ public abstract class FileRepository<T extends FileEntity> {
                 res.retainAll(result);
         }
 
+
+
+        log.trace("Result:{}",res.stream().map(i -> i.getFile().getName()).collect(Collectors.toList()));
         for(T result : res)
             if (!result.exists() && !result.hasData()){
                 this.update();
@@ -132,7 +156,7 @@ public abstract class FileRepository<T extends FileEntity> {
 
     public FileRepository(String path, String pattern, KeyCollection[] keys) {
         this.rootDirectory = new File(path);
-
+        log.info("Starting file repository. Path:{}", path);
         files = new HashSet<>();
         if (!rootDirectory.exists())
             throw new DirectoryNotExists(path);
