@@ -41,11 +41,12 @@ public abstract class FileRepository<T extends FileEntity> {
             InterruptedException {
 
         List<File> filesList = Arrays.asList(dir.listFiles());
-        filesList.sort((a,b) -> b.getName().compareTo(a.getName()));
+        filesList.sort((b,a) -> b.getName().compareTo(a.getName()));
 
         for (File file : filesList ){
             if (file.isDirectory())
                 update(file);
+            log.info("F:{}", file.getName());
             String name = file.getAbsolutePath().replace(rootDirectory.getAbsolutePath()+"/", "");
             log.trace("Check file: {}", file);
             Matcher matcher = pattern.matcher(name);

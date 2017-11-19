@@ -60,8 +60,8 @@ public class AllTest {
     @Test
     public void testRequestDevice() {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual, 0),
-                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null)
+                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual, 0)
         );
 
         assertNotNull(device);
@@ -78,8 +78,9 @@ public class AllTest {
 
 
         device = testFileService.get(
-                new KeyRequest("version", 124, SortedComparableTypes.LessThanEqual),
-                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null)
+                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null),
+                new KeyRequest("version", 124, SortedComparableTypes.LessThanEqual)
+
         );
 
         assertNotNull(device);
