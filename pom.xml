@@ -6,7 +6,7 @@
 
     <groupId>ru.veryevilzed.tools</groupId>
     <artifactId>spring-boot-filedb</artifactId>
-    <version>0.12</version>
+    <version>0.13</version>
     <packaging>jar</packaging>
 
     <name>Spring FileDB</name>
@@ -73,4 +73,18 @@
             <version>3.4</version>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>releases</name>
+            <url>http://nexus.30-30.ru/repository/maven-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>snapshots</name>
+            <url>http://nexus.30-30.ru/repository/maven-snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

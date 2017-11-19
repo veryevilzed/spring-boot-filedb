@@ -60,8 +60,8 @@ public class AllTest {
     @Test
     public void testRequestDevice() {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("device", 456L, SortedComparableTypes.Equals),
-                new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual, 0),
+                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null)
         );
 
         assertNotNull(device);
@@ -78,8 +78,8 @@ public class AllTest {
 
 
         device = testFileService.get(
-                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 124, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("version", 124, SortedComparableTypes.LessThanEqual),
+                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null)
         );
 
         assertNotNull(device);
@@ -117,7 +117,7 @@ public class AllTest {
         );
 
         assertNotNull(device);
-        assertTrue(device.getPath().endsWith("123@.yml"));
+        assertTrue(device.getPath().endsWith("@.yml"));
     }
 
 
@@ -137,8 +137,8 @@ public class AllTest {
 
 
         device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 125, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("version", 125, SortedComparableTypes.LessThanEqual),
+                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null)
         );
 
         assertNotNull(device);

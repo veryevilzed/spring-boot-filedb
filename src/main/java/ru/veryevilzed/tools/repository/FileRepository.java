@@ -40,8 +40,10 @@ public abstract class FileRepository<T extends FileEntity> {
             IllegalAccessException,
             InterruptedException {
 
+        List<File> filesList = Arrays.asList(dir.listFiles());
+        filesList.sort((a,b) -> b.getName().compareTo(a.getName()));
 
-        for (File file : dir.listFiles()){
+        for (File file : filesList ){
             if (file.isDirectory())
                 update(file);
             String name = file.getAbsolutePath().replace(rootDirectory.getAbsolutePath()+"/", "");
