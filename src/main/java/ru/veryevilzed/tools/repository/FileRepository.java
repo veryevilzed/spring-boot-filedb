@@ -46,9 +46,7 @@ public abstract class FileRepository<T extends FileEntity> {
         for (File file : filesList ){
             if (file.isDirectory())
                 update(file);
-            log.info("F:{}", file.getName());
             String name = file.getAbsolutePath().replace(rootDirectory.getAbsolutePath()+"/", "");
-            log.trace("Check file: {}", file);
             Matcher matcher = pattern.matcher(name);
             if (!matcher.matches())
                 continue;
