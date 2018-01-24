@@ -129,9 +129,9 @@ public abstract class FileRepository<T extends FileEntity> {
         if (results.size() == 0)
             return null;
 
-        for(int i=0;i<results.size();i++) {
-            log.trace("Keys:{} {} = {}",  i, requests[i].getName(), results.get(i).stream().map(j -> j.getFile().getName()).collect(Collectors.toList()));
-        }
+//        for(int i=0;i<results.size();i++) {
+//            log.trace("Keys:{} {} = {}",  i, requests[i].getName(), results.get(i).stream().map(j -> j.getFile().getName()).collect(Collectors.toList()));
+//        }
 
         for(Set<T> result : results){
             if (res == null) {
@@ -142,7 +142,7 @@ public abstract class FileRepository<T extends FileEntity> {
 
 
 
-        log.trace("Result:{}",res.stream().map(i -> i.getFile().getName()).collect(Collectors.toList()));
+        //log.trace("Result:{}",res.stream().map(i -> i.getFile().getName()).collect(Collectors.toList()));
         for(T result : res)
             if (!result.exists() && !result.hasData()){
                 this.update();

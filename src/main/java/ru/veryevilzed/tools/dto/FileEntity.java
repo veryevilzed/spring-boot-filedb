@@ -40,7 +40,11 @@ public abstract class FileEntity {
      * Фаил существует
      * @return
      */
-    public boolean exists() { return file.exists(); }
+    public boolean exists() {
+        if (hasData())
+            return true;
+        return file.exists();
+    }
 
     /**
      * Метод для перекрытия и аказания что есть DATA в контейнере

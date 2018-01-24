@@ -6,7 +6,7 @@
 
     <groupId>ru.veryevilzed.tools</groupId>
     <artifactId>spring-boot-filedb</artifactId>
-    <version>0.15</version>
+    <version>0.16</version>
     <packaging>jar</packaging>
 
     <name>Spring FileDB</name>
