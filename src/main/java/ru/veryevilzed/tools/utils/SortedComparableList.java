@@ -33,7 +33,7 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
 
         switch (type){
             default:
-            case Equals:
+            case EqualTo:
                 if (key == null)
                     res.add(this.stream().filter(Objects::isNull).findFirst().orElse(null));
                 else
@@ -42,13 +42,13 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
             case LessThan:
                 res.addAll(this.stream().filter(i -> i.compareTo(key) < 0).sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
                 break;
-            case LessThanEqual:
+            case LessThanOrEqualTo:
                 res.addAll(this.stream().filter(i -> i.compareTo(key) <= 0).sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
                 break;
             case GreaterThan:
                 res.addAll(this.stream().filter(i -> i.compareTo(key) > 0).sorted(Comparable::compareTo).collect(Collectors.toList()));
                 break;
-            case GreaterThanEqual:
+            case GreaterThanOrEqualTo:
                 res.addAll(this.stream().filter(i -> i.compareTo(key) >= 0).sorted(Comparable::compareTo).collect(Collectors.toList()));
                 break;
         }
@@ -69,7 +69,7 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
         V res;
         switch (type){
             default:
-            case Equals:
+            case EqualTo:
                 if (key == null)
                     res = this.stream().filter(Objects::isNull).findFirst().orElse(null);
                 else
@@ -78,13 +78,13 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
             case LessThan:
                 res = this.stream().filter(i -> i.compareTo(key) < 0).sorted(Comparator.reverseOrder()).findFirst().orElse(null);
                 break;
-            case LessThanEqual:
+            case LessThanOrEqualTo:
                 res = this.stream().filter(i -> i.compareTo(key) <= 0).sorted(Comparator.reverseOrder()).findFirst().orElse(null);
                 break;
             case GreaterThan:
                 res = this.stream().filter(i -> i.compareTo(key) > 0).sorted(Comparable::compareTo).findFirst().orElse(null);
                 break;
-            case GreaterThanEqual:
+            case GreaterThanOrEqualTo:
                 res = this.stream().filter(i -> i.compareTo(key) >= 0).sorted(Comparable::compareTo).findFirst().orElse(null);
                 break;
         }

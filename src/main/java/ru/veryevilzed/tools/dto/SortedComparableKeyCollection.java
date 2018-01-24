@@ -47,7 +47,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> 
 
     @SuppressWarnings("unchecked")
     public OrderedSet<V> get(Object key, SortedComparableTypes type) {
-        if (type == SortedComparableTypes.Equals)
+        if (type == SortedComparableTypes.EqualTo)
             if (this.map.containsKey(key))
                 return this.map.get(key);
             else

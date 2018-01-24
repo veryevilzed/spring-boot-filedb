@@ -13,7 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Абстрактный репозиторий файлов
@@ -121,7 +120,7 @@ public abstract class FileRepository<T extends FileEntity> {
 
             if (request.isUseDefault()){
                 request = request.getDefaultRequest();
-                resultSet.addAll(get(request.getName()).get(request.getKey(), SortedComparableTypes.Equals));
+                resultSet.addAll(get(request.getName()).get(request.getKey(), SortedComparableTypes.EqualTo));
             }
             results.add(resultSet);
 

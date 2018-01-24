@@ -33,7 +33,7 @@ public class SortedComparableListTest {
     public void testException()  {
 
         try {
-            list.get(99, SortedComparableTypes.Equals);
+            list.get(99, SortedComparableTypes.EqualTo);
             assertTrue(false);
         }catch (KeyNotFoundException ignored) {
             assertTrue(true);
@@ -44,8 +44,8 @@ public class SortedComparableListTest {
     @Test
     public void testComparatorEquals() throws KeyNotFoundException {
 
-        assertEquals((int) list.get(10, SortedComparableTypes.Equals), 10);
-        assertNull(list.get(11, SortedComparableTypes.Equals, null));
+        assertEquals((int) list.get(10, SortedComparableTypes.EqualTo), 10);
+        assertNull(list.get(11, SortedComparableTypes.EqualTo, null));
     }
 
     @Test
@@ -59,9 +59,9 @@ public class SortedComparableListTest {
 
     @Test
     public void testComparatorGreaterThanEqual() throws KeyNotFoundException {
-        assertEquals((int) list.get(20, SortedComparableTypes.GreaterThanEqual, null), 20);
-        assertEquals((int) list.get(19, SortedComparableTypes.GreaterThanEqual, null), 20);
-        assertNull(list.get(101, SortedComparableTypes.GreaterThanEqual, null));
+        assertEquals((int) list.get(20, SortedComparableTypes.GreaterThanOrEqualTo, null), 20);
+        assertEquals((int) list.get(19, SortedComparableTypes.GreaterThanOrEqualTo, null), 20);
+        assertNull(list.get(101, SortedComparableTypes.GreaterThanOrEqualTo, null));
 
     }
 
@@ -73,18 +73,18 @@ public class SortedComparableListTest {
 
     @Test
     public void testComparatorLessThanEqual() {
-        assertEquals((int)list.get(75, SortedComparableTypes.LessThanEqual, null), 75);
-        assertEquals((int)list.get(76, SortedComparableTypes.LessThanEqual, null), 75);
-        assertNull(list.get(9, SortedComparableTypes.LessThanEqual, null));
-        assertNull(list.get(5, SortedComparableTypes.LessThanEqual, null));
+        assertEquals((int)list.get(75, SortedComparableTypes.LessThanOrEqualTo, null), 75);
+        assertEquals((int)list.get(76, SortedComparableTypes.LessThanOrEqualTo, null), 75);
+        assertNull(list.get(9, SortedComparableTypes.LessThanOrEqualTo, null));
+        assertNull(list.get(5, SortedComparableTypes.LessThanOrEqualTo, null));
     }
 
     @Test
     public void testDelete() {
         list.add(33);
-        assertEquals((int)list.get(33, SortedComparableTypes.Equals, null), 33);
+        assertEquals((int)list.get(33, SortedComparableTypes.EqualTo, null), 33);
         list.remove((Object)33);
-        assertEquals((int)list.get(33, SortedComparableTypes.Equals, 0), 0);
+        assertEquals((int)list.get(33, SortedComparableTypes.EqualTo, 0), 0);
     }
 
 

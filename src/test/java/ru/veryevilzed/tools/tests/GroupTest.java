@@ -2,10 +2,8 @@ package ru.veryevilzed.tools.tests;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
+
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
-
-import java.io.IOException;
-import java.nio.file.Paths;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -39,9 +33,9 @@ public class GroupTest {
     @Test
     public void versions()  {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual, 0),
-                new KeyRequest("device", 1L, SortedComparableTypes.Equals, null),
-                new KeyRequest("group", 1601L, SortedComparableTypes.Equals)
+                new KeyRequest("version", 123, SortedComparableTypes.LessThanOrEqualTo, 0),
+                new KeyRequest("device", 1L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("group", 1601L, SortedComparableTypes.EqualTo)
 
         );
 
@@ -49,9 +43,9 @@ public class GroupTest {
 
 
         device = testFileService.get(
-                new KeyRequest("version", 1000, SortedComparableTypes.LessThanEqual, 0),
-                new KeyRequest("device", 1L, SortedComparableTypes.Equals, null),
-                new KeyRequest("group", 1601L, SortedComparableTypes.Equals)
+                new KeyRequest("version", 1000, SortedComparableTypes.LessThanOrEqualTo, 0),
+                new KeyRequest("device", 1L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("group", 1601L, SortedComparableTypes.EqualTo)
         );
         log.info("Path:{}",device.getPath());
         Assert.assertTrue(device.getPath().endsWith("@1000.yml"));
@@ -60,9 +54,9 @@ public class GroupTest {
     @Test
     public void versions2_50()  {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("version", 10, SortedComparableTypes.LessThanEqual),
-                new KeyRequest("device", 2L, SortedComparableTypes.Equals, null),
-                new KeyRequest("group", 1601L, SortedComparableTypes.Equals)
+                new KeyRequest("version", 10, SortedComparableTypes.LessThanOrEqualTo),
+                new KeyRequest("device", 2L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("group", 1601L, SortedComparableTypes.EqualTo)
 
         );
         log.info("Path:{}",device.getPath());

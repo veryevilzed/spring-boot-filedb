@@ -2,18 +2,17 @@ package ru.veryevilzed.tools.utils;
 
 public enum SortedComparableTypes {
 
+    EqualTo,
 
-    Equals,
     /**
      * Найти ключ больше текущего
      */
     GreaterThan,
-    GreaterThanEqual,
+    GreaterThanOrEqualTo,
 
     /**
      * Найти ключ меньше текущего
      */
     LessThan,
-    LessThanEqual
-
+    LessThanOrEqualTo
 }

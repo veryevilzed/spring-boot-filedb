@@ -52,7 +52,7 @@ public class AllTest {
 
     @Test
     public void testDeviceNull() {
-        Set devices = testFileService.get("device").get(null, SortedComparableTypes.Equals);
+        Set devices = testFileService.get("device").get(null, SortedComparableTypes.EqualTo);
         assertEquals(devices.size(), 2);
     }
 
@@ -60,16 +60,16 @@ public class AllTest {
     @Test
     public void testRequestDevice() {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 123, SortedComparableTypes.LessThanEqual, 0)
+                new KeyRequest("device", 456L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 123, SortedComparableTypes.LessThanOrEqualTo, 0)
         );
 
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("123@456.yml"));
 
         device = testFileService.get(
-                new KeyRequest("device", 456L, SortedComparableTypes.Equals),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 456L, SortedComparableTypes.EqualTo),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
 
         assertNotNull(device);
@@ -78,8 +78,8 @@ public class AllTest {
 
 
         device = testFileService.get(
-                new KeyRequest("device", 456L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 124, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 456L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 124, SortedComparableTypes.LessThanOrEqualTo)
 
         );
 
@@ -92,8 +92,8 @@ public class AllTest {
     @Test
     public void testAllFalseDevice() {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("device", 333L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 5, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 333L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 5, SortedComparableTypes.LessThanOrEqualTo)
         );
 
         assertNotNull(device);
@@ -104,8 +104,8 @@ public class AllTest {
     @Test
     public void testUndefinedDevice() {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
 
         assertNotNull(device);
@@ -113,8 +113,8 @@ public class AllTest {
 
 
         device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 125, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 125, SortedComparableTypes.LessThanOrEqualTo)
         );
 
         assertNotNull(device);
@@ -128,8 +128,8 @@ public class AllTest {
     public void testUpdateDevice() {
         testFileService.update();
         TextFileEntity device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
 
 
@@ -138,8 +138,8 @@ public class AllTest {
 
 
         device = testFileService.get(
-                new KeyRequest("version", 125, SortedComparableTypes.LessThanEqual),
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null)
+                new KeyRequest("version", 125, SortedComparableTypes.LessThanOrEqualTo),
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null)
         );
 
         assertNotNull(device);
@@ -152,8 +152,8 @@ public class AllTest {
         testFileService.update();
 
         TextFileEntity device = testFileService.get(
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual),
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null)
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo),
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null)
 
         );
 
@@ -166,8 +166,8 @@ public class AllTest {
         FileUtils.forceDelete(Paths.get(path, "122@999.yml").toFile());
 
         device = testFileService.get(
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual),
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null)
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo),
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null)
         );
 
         assertNotNull(device);
@@ -179,8 +179,8 @@ public class AllTest {
         testFileService.update();
 
         device = testFileService.get(
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual),
-                new KeyRequest("device", 500L, SortedComparableTypes.Equals, null)
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo),
+                new KeyRequest("device", 500L, SortedComparableTypes.EqualTo, null)
         );
 
         assertNotNull(device);
@@ -194,8 +194,8 @@ public class AllTest {
         TextFileEntity device;
 
         device = testFileService.get(
-                new KeyRequest("device", 333L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 333L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("@.yml"));
@@ -206,16 +206,16 @@ public class AllTest {
         testFileService.update();
 
         device = testFileService.get(
-                new KeyRequest("device", 500L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 500L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("122@500.yml"));
         FileUtils.forceDelete(Paths.get(path, "122@500.yml").toFile());
 
         device = testFileService.get(
-                new KeyRequest("device", 500L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 500L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
 
         assertNotNull(device);;
@@ -225,8 +225,8 @@ public class AllTest {
     @Test
     public void testFileCreationRemoving() throws IOException {
         TextFileEntity device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("@.yml"));
@@ -237,8 +237,8 @@ public class AllTest {
         testFileService.update();
 
         device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("122@999.yml"));
@@ -247,8 +247,8 @@ public class AllTest {
         testFileService.update();
 
         device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("@.yml"));
@@ -259,8 +259,8 @@ public class AllTest {
     public void testFileText() throws IOException {
 
         TextFileEntity device = testFileService.get(
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null),
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual)
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null),
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo)
         );
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("@.yml"));
@@ -274,8 +274,8 @@ public class AllTest {
         testFileService.update();
 
         device = testFileService.get(
-                new KeyRequest("version", 122, SortedComparableTypes.LessThanEqual),
-                new KeyRequest("device", 999L, SortedComparableTypes.Equals, null)
+                new KeyRequest("version", 122, SortedComparableTypes.LessThanOrEqualTo),
+                new KeyRequest("device", 999L, SortedComparableTypes.EqualTo, null)
         );
         assertNotNull(device);
         assertTrue(device.getPath().endsWith("122@999.yml"));
