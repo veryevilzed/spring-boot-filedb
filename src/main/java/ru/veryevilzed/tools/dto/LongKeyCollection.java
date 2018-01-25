@@ -1,6 +1,7 @@
 package ru.veryevilzed.tools.dto;
 
-public class LongKeyCollection<V extends FileEntity> extends SortedComparableKeyCollection<Long, V>  {
+public class LongKeyCollection<V extends FileEntity> extends SortedComparableKeyCollection<Long, V> {
+
     public LongKeyCollection(String name) {
         super(name);
     }
@@ -11,9 +12,10 @@ public class LongKeyCollection<V extends FileEntity> extends SortedComparableKey
 
     @Override
     public Object parseKey(String key, V file) {
-        if (key == null)
-            return this.put(null, file);
-        else
-            return this.put(Long.parseLong(key), file);
+        if (key == null) {
+            return put(null, file);
+        } else {
+            return put(Long.parseLong(key), file);
+        }
     }
 }

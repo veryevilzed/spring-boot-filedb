@@ -1,8 +1,5 @@
 package ru.veryevilzed.tools.dto;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class IntegerKeyCollection<V extends FileEntity> extends SortedComparableKeyCollection<Integer, V> {
 
     public IntegerKeyCollection(String name) {
@@ -15,9 +12,10 @@ public class IntegerKeyCollection<V extends FileEntity> extends SortedComparable
 
     @Override
     public Object parseKey(String key, V file) {
-        if (key == null)
-            return this.put(null, file);
-        else
-            return this.put(Integer.parseInt(key), file);
+        if (key == null) {
+            return put(null, file);
+        } else {
+            return put(Integer.parseInt(key), file);
+        }
     }
 }

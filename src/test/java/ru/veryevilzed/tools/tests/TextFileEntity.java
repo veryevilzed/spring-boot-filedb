@@ -1,37 +1,25 @@
 package ru.veryevilzed.tools.tests;
 
 import org.apache.commons.io.FileUtils;
-import ru.veryevilzed.tools.dto.FileEntity;
+
 import java.io.File;
 import java.io.IOException;
 
+import ru.veryevilzed.tools.dto.FileEntity;
 
-public class TextFileEntity extends FileEntity {
 
-
-    String text = null;
+public class TextFileEntity extends FileEntity<String> {
 
     public TextFileEntity(File file) {
         super(file);
     }
 
-
-    @Override
-    public void update() {
-        text = null;
-    }
-
-    @Override
-    public boolean hasData() {
-        return this.text != null;
-    }
-
     public String getText() {
-        if (text == null) {
+        if (data == null) {
             try {
-                text = FileUtils.readFileToString(this.getFile(), "UTF-8");
-            }catch (IOException ignored) {}
+                data = FileUtils.readFileToString(this.getFile(), "UTF-8");
+            } catch (IOException ignored) { /**/ }
         }
-        return text;
+        return data;
     }
 }

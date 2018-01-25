@@ -3,13 +3,15 @@ package ru.veryevilzed.tools.tests;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+
+import javax.annotation.PostConstruct;
+
 import ru.veryevilzed.tools.dto.IntegerKeyCollection;
 import ru.veryevilzed.tools.dto.KeyCollection;
 import ru.veryevilzed.tools.dto.LongKeyCollection;
 import ru.veryevilzed.tools.repository.FileRepository;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
 
 @Service
 public class TestFileService extends FileRepository<TextFileEntity> {

@@ -1,43 +1,47 @@
 package ru.veryevilzed.tools.utils;
 
-import ru.veryevilzed.tools.exceptions.KeyNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import ru.veryevilzed.tools.exceptions.KeyNotFoundException;
 
 public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> {
 
-    @SuppressWarnings("UnnecessaryParentheses")
     @Override
     public boolean contains(Object o) {
         V obj;
         try {
             obj = ((V) o);
-        }catch (ClassCastException ignored){
+        } catch (ClassCastException ignored) {
             return false;
         }
 
         return this.stream().filter(i -> i == null ? i == obj : i.compareTo(obj) == 0).findFirst().orElseGet(null) != null;
     }
 
-
-
     public List<V> getAll(V key, SortedComparableTypes type, V def) {
         List<V> res = getAll(key, type);
-        if (res.isEmpty())
-            return  Collections.singletonList(def);
+        if (res.isEmpty()) {
+            return Collections.singletonList(def);
+        }
         return res;
     }
 
     public List<V> getAll(V key, SortedComparableTypes type) {
         List<V> res = new ArrayList<>();
 
-        switch (type){
+        switch (type) {
             default:
             case EqualTo:
-                if (key == null)
+                if (key == null) {
                     res.add(this.stream().filter(Objects::isNull).findFirst().orElse(null));
-                else
+                } else {
                     res.add(this.stream().filter(key::equals).findFirst().orElse(null));
+                }
                 break;
             case LessThan:
                 res.addAll(this.stream().filter(i -> i.compareTo(key) < 0).sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
@@ -56,24 +60,23 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
     }
 
     public V get(V key, SortedComparableTypes type, V def) {
-        try{
+        try {
             return get(key, type);
-        }catch (KeyNotFoundException ignore) {
+        } catch (KeyNotFoundException ignore) {
             return def;
         }
     }
 
-
-
     public V get(V key, SortedComparableTypes type) throws KeyNotFoundException {
         V res;
-        switch (type){
+        switch (type) {
             default:
             case EqualTo:
-                if (key == null)
+                if (key == null) {
                     res = this.stream().filter(Objects::isNull).findFirst().orElse(null);
-                else
+                } else {
                     res = this.stream().filter(key::equals).findFirst().orElse(null);
+                }
                 break;
             case LessThan:
                 res = this.stream().filter(i -> i.compareTo(key) < 0).sorted(Comparator.reverseOrder()).findFirst().orElse(null);
@@ -89,15 +92,17 @@ public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> 
                 break;
         }
 
-        if (res == null)
+        if (res == null) {
             throw new KeyNotFoundException(key);
+        }
         return res;
     }
 
     @Override
     public boolean add(V v) {
-        if(!super.contains(v))
+        if (!super.contains(v)) {
             return super.add(v);
+        }
         return false;
     }
 

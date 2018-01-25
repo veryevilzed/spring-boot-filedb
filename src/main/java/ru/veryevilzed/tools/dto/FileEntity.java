@@ -1,63 +1,52 @@
 package ru.veryevilzed.tools.dto;
 
-import lombok.Getter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+public abstract class FileEntity<T> {
 
-@Slf4j
-@ToString(exclude = {"keys","file"})
-public abstract class FileEntity {
+    protected final File file;
 
-    @Getter
-    final String path;
+    protected long lastModified = -1;
 
-    @Getter
-    final File file;
+    protected final Map<KeyCollection, Object> keys = new HashMap<>();
 
-    @Getter
-    long lastModified;
+    protected T data;
 
-    @Getter
-    final Map<KeyCollection, Object> keys;
+    public FileEntity(File file) {
+        this.file = file;
+    }
 
     /**
      * Фаил изменился
-     * @return
      */
     public boolean isModified() {
         return file.lastModified() != lastModified;
     }
 
-
     /**
-     * Фаил существует
-     * @return
+     * Контейнер с данными заполнен
      */
     public boolean exists() {
-        if (hasData())
-            return true;
-        return file.exists();
+        return hasData() || file.exists();
     }
 
     /**
-     * Метод для перекрытия и аказания что есть DATA в контейнере
+     * Метод для аказания что есть DATA в контейнере
      */
-    public boolean hasData() { return false; }
+    public boolean hasData() {
+        return data != null;
+    }
 
     /**
      * Добавить ключ к даному инстансу
-     * @param keyName ключ
+     *
+     * @param keyName  ключ
      * @param keyValue значение
      */
     public void addKey(KeyCollection keyName, Object keyValue) {
-        this.keys.put(keyName, keyValue);
+        keys.put(keyName, keyValue);
     }
 
     /**
@@ -66,44 +55,53 @@ public abstract class FileEntity {
     public void checkForUpdate() {
 
         if (exists() && isModified()) {
-            try{
-                update();
-            }catch (Exception e){
-                log.error("Error update file {}:{}", path, e.getMessage());
-            }finally {
-                lastModified = file.lastModified();
-
-            }
-
+            invalidate();
+            lastModified = file.lastModified();
         }
     }
 
     /**
      * абстрактный метод обновления данных
      */
-    protected abstract void update();
+    public void invalidate() {
+        data = null;
+    }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(path).build();
+        return file.getAbsolutePath().hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof FileEntity){
-            FileEntity e = (FileEntity)obj;
-            return new EqualsBuilder().append(path, e.path).build();
-        }else
-            return false;
+
+        if ((obj instanceof FileEntity)) {
+            FileEntity fileEntity = (FileEntity) obj;
+            return file != null
+                   && fileEntity.getFile() != null
+                   && file.getAbsolutePath().equals(fileEntity.getFile().getAbsolutePath());
+        }
+        return false;
     }
 
-
-
-    public FileEntity(File file) {
-        this.file = file;
-        path = file.getAbsolutePath();
-        lastModified = -1;
-        keys = new HashMap<>();
+    @Override
+    public String toString() {
+        return "FileEntity(path=" + file.getPath() + ", lastModified=" + lastModified + ")";
     }
 
+    public String getPath() {
+        return file.getAbsolutePath();
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public long getLastModified() {
+        return lastModified;
+    }
+
+    public Map<KeyCollection, Object> getKeys() {
+        return keys;
+    }
 }

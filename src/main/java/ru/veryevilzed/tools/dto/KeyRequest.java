@@ -1,23 +1,21 @@
 package ru.veryevilzed.tools.dto;
 
-import lombok.Data;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
-@Data
 public class KeyRequest {
 
-    final String name;
-    final Object key;
-    final SortedComparableTypes type;
-    final Object defaultKey;
-    final boolean useDefault;
+    private final String name;
+    private final Object key;
+    private final SortedComparableTypes type;
+    private final Object defaultKey;
+    private final boolean useDefault;
 
     public KeyRequest(String name, Object key, SortedComparableTypes type) {
         this.name = name;
         this.key = key;
         this.type = type;
         this.defaultKey = null;
-        useDefault = false;
+        this.useDefault = false;
     }
 
     public KeyRequest(String name, Object key, SortedComparableTypes type, Object defaultKey) {
@@ -25,10 +23,30 @@ public class KeyRequest {
         this.key = key;
         this.type = type;
         this.defaultKey = defaultKey;
-        useDefault = true;
+        this.useDefault = true;
     }
 
     public KeyRequest getDefaultRequest() {
         return new KeyRequest(name, defaultKey, type);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Object getKey() {
+        return key;
+    }
+
+    public SortedComparableTypes getType() {
+        return type;
+    }
+
+    public Object getDefaultKey() {
+        return defaultKey;
+    }
+
+    public boolean isUseDefault() {
+        return useDefault;
     }
 }
