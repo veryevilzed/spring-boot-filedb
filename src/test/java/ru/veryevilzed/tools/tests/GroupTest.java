@@ -1,5 +1,8 @@
 package ru.veryevilzed.tools.tests;
 
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,9 +20,8 @@ import ru.veryevilzed.tools.utils.SortedComparableTypes;
 @SpringBootTest
 @Import(TestApplication.class)
 @ActiveProfiles("test")
+@Slf4j
 public class GroupTest {
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GroupTest.class);
 
     @Autowired
     private TestGroupFileService testFileService;

@@ -12,11 +12,9 @@ public interface KeyCollection<V> {
     boolean isNullable();
 
     void remove(Object key);
-
     void remove(Object key, FileEntity entry);
 
     Object parseKey(String key, V file);
-
     OrderedSet<V> get(Object key, SortedComparableTypes type);
 
 }

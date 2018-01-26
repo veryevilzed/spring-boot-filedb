@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.veryevilzed.tools.dto.FileEntity;
 import ru.veryevilzed.tools.dto.KeyCollection;
 import ru.veryevilzed.tools.dto.KeyRequest;
@@ -21,9 +22,8 @@ import ru.veryevilzed.tools.utils.SortedComparableTypes;
 /**
  * Абстрактный репозиторий файлов
  */
+@Slf4j
 public abstract class FileRepository<T extends FileEntity> {
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileRepository.class);
 
     private final File rootDirectory;
     private final Pattern pattern;

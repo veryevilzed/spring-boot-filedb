@@ -1,19 +1,20 @@
 package ru.veryevilzed.tools.dto;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import lombok.Getter;
 import ru.veryevilzed.tools.utils.OrderedSet;
 import ru.veryevilzed.tools.utils.SortedComparableList;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
+import java.util.*;
 
 public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> implements KeyCollection<V> {
 
     private Map<T, OrderedSet<V>> map;
 
-    private final String name;
+    @Getter
+    final String name;
 
-    private final boolean nullable;
+    @Getter
+    final boolean nullable;
 
     private SortedComparableList<T> keys;
 
@@ -95,15 +96,5 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> 
         }
         map = new HashMap<>();
         keys = new SortedComparableList<>();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean isNullable() {
-        return nullable;
     }
 }

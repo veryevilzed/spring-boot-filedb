@@ -11,6 +11,7 @@ import ru.veryevilzed.tools.exceptions.KeyNotFoundException;
 
 public class SortedComparableList<V extends Comparable<V>> extends ArrayList<V> {
 
+    @SuppressWarnings("UnnecessaryParentheses")
     @Override
     public boolean contains(Object o) {
         V obj;
