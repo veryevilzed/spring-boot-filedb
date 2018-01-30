@@ -36,7 +36,7 @@ public abstract class FileRepository<T extends FileEntity> {
 
     public FileRepository(String path, String pattern, KeyCollection[] keys) {
         this.rootDirectory = new File(path);
-        log.info("Starting file repository. Path:{}", path);
+        log.info("Initializing file repository at {}", path);
         if (!rootDirectory.exists()) {
             throw new DirectoryNotExists(path);
         }
@@ -78,13 +78,13 @@ public abstract class FileRepository<T extends FileEntity> {
 
         for (FileEntity<T> file : new ArrayList<>(files)) {
             if (!file.exists()) {
-                log.trace("Remove file: {}", file);
+                log.trace("File removed: {}", file);
                 files.remove(file);
                 for (KeyCollection key : file.getKeys().keySet()) {
                     key.remove(file.getKeys().get(key), file);
                 }
             } else {
-                log.trace("Update file: {}", file);
+                log.trace("File updated: {}", file);
                 file.checkForUpdate();
             }
         }

@@ -43,7 +43,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> 
 
     @Override
     public String toString() {
-        return String.format("[%s %s]", name, map);
+        return "[" + name + " " + map +"]";
     }
 
     @SuppressWarnings("unchecked")
