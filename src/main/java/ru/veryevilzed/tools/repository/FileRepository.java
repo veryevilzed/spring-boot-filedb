@@ -115,12 +115,15 @@ public abstract class FileRepository<T extends FileEntity> {
         return keys.get(key);
     }
 
+    /**
+     * See a note before the return statement !!!
+     */
     @SuppressWarnings("unchecked")
     public T get(KeyRequest... requests) {
-        LinkedHashSet<T> res = null;
 
         List<Set<T>> results = new ArrayList<>();
 
+        // Perform selection according to each of the requests, saving the results in separate sets
         for (KeyRequest request : requests) {
             LinkedHashSet<T> resultSet = get(request.getName()).get(request.getKey(), request.getType());
             if (resultSet == null) {
@@ -142,6 +145,8 @@ public abstract class FileRepository<T extends FileEntity> {
 //            log.trace("Keys:{} {} = {}",  i, requests[i].getName(), results.get(i).stream().map(j -> j.getFile().getName()).collect(Collectors.toList()));
 //        }
 
+        // Intersect all sets sequentially
+        LinkedHashSet<T> res = null;
         for (Set<T> result : results) {
             if (res == null) {
                 res = new LinkedHashSet<>(result);
@@ -149,8 +154,13 @@ public abstract class FileRepository<T extends FileEntity> {
                 res.retainAll(result);
             }
         }
+        if (res.isEmpty()) {
+            return null;
+        }
 
         //log.trace("Result:{}",res.stream().map(i -> i.getFile().getName()).collect(Collectors.toList()));
+
+        // Initialize each resource if it hasn't been initialized yet
         for (T result : res) {
             if (!result.exists() && !result.hasData()) {
                 this.update();
@@ -158,9 +168,18 @@ public abstract class FileRepository<T extends FileEntity> {
             }
         }
 
-        if (res.size() == 0) {
-            return null;
-        }
+        // Note: each set retains the order of added items, so ultimately the result (single returned element)
+        // might be different depending on "requests" parameters order, since sets are being intersected sequentially.
+        //
+        // For example, "requests" parameter contains three KeyRequest items.
+        // They produce sets [a, b, c], [b, a, c] and [c, b, a]. Intersection will result in
+        // [a, b, c] ∩ [b, a, c] ∩ [c, b, a] =  [a, b, c].
+        //
+        // If first and second params in "requests" will swap their order, the result will be different -
+        // [b, a, c] ∩ [a, b, c] ∩ [c, b, a] =  [b, a, c].
+        // We use LinkedHasSet, which retains the added elements order!
+        // But here only the first element is returned, so in first case it will be [a] and in second one it is [b].
+        // Conclusion: "requests" parameters order MATTERS!!!
         return res.iterator().next();
     }
 }

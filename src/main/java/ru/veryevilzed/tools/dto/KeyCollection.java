@@ -17,5 +17,4 @@ public interface KeyCollection<V> {
 
     Object parseKey(String key, V file);
     LinkedHashSet<V> get(Object key, SortedComparableTypes type);
-
 }
