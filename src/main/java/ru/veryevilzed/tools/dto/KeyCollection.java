@@ -1,6 +1,7 @@
 package ru.veryevilzed.tools.dto;
 
-import ru.veryevilzed.tools.utils.OrderedSet;
+import java.util.LinkedHashSet;
+
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
 public interface KeyCollection<V> {
@@ -15,6 +16,6 @@ public interface KeyCollection<V> {
     void remove(Object key, FileEntity entry);
 
     Object parseKey(String key, V file);
-    OrderedSet<V> get(Object key, SortedComparableTypes type);
+    LinkedHashSet<V> get(Object key, SortedComparableTypes type);
 
 }

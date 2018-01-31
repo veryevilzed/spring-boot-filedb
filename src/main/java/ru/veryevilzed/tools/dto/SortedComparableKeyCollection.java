@@ -1,14 +1,16 @@
 package ru.veryevilzed.tools.dto;
 
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+
 import lombok.Getter;
-import ru.veryevilzed.tools.utils.OrderedSet;
 import ru.veryevilzed.tools.utils.SortedComparableList;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
-import java.util.*;
 
 public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> implements KeyCollection<V> {
 
-    private Map<T, OrderedSet<V>> map;
+    private Map<T, LinkedHashSet<V>> map;
 
     @Getter
     final String name;
@@ -35,7 +37,7 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> 
 
         keys.add(key);
         if (!map.containsKey(key)) {
-            map.put(key, new OrderedSet<>());
+            map.put(key, new LinkedHashSet<>());
         }
         map.get(key).add(value);
         return key;
@@ -47,16 +49,16 @@ public abstract class SortedComparableKeyCollection<T extends Comparable<T>, V> 
     }
 
     @SuppressWarnings("unchecked")
-    public OrderedSet<V> get(Object key, SortedComparableTypes type) {
+    public LinkedHashSet<V> get(Object key, SortedComparableTypes type) {
         if (type == SortedComparableTypes.EqualTo) {
             if (this.map.containsKey(key)) {
                 return this.map.get(key);
             } else {
-                return new OrderedSet<>();
+                return new LinkedHashSet<>();
             }
         }
 
-        OrderedSet<V> res = new OrderedSet<>();
+        LinkedHashSet<V> res = new LinkedHashSet<>();
         for (T _key : keys.getAll((T) key, type)) {
             res.addAll(this.map.get(_key));
         }

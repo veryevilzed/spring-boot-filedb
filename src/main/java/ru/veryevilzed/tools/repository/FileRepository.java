@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +17,6 @@ import ru.veryevilzed.tools.dto.FileEntity;
 import ru.veryevilzed.tools.dto.KeyCollection;
 import ru.veryevilzed.tools.dto.KeyRequest;
 import ru.veryevilzed.tools.exceptions.DirectoryNotExists;
-import ru.veryevilzed.tools.utils.OrderedSet;
 import ru.veryevilzed.tools.utils.SortedComparableTypes;
 
 /**
@@ -117,14 +117,14 @@ public abstract class FileRepository<T extends FileEntity> {
 
     @SuppressWarnings("unchecked")
     public T get(KeyRequest... requests) {
-        OrderedSet<T> res = null;
+        LinkedHashSet<T> res = null;
 
         List<Set<T>> results = new ArrayList<>();
 
         for (KeyRequest request : requests) {
-            OrderedSet<T> resultSet = get(request.getName()).get(request.getKey(), request.getType());
+            LinkedHashSet<T> resultSet = get(request.getName()).get(request.getKey(), request.getType());
             if (resultSet == null) {
-                resultSet = new OrderedSet<>();
+                resultSet = new LinkedHashSet<>();
             }
 
             if (request.isUseDefault()) {
@@ -144,7 +144,7 @@ public abstract class FileRepository<T extends FileEntity> {
 
         for (Set<T> result : results) {
             if (res == null) {
-                res = new OrderedSet<>(result);
+                res = new LinkedHashSet<>(result);
             } else {
                 res.retainAll(result);
             }
